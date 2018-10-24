@@ -309,7 +309,6 @@ foo-6c444c4c69-h926n   0/1       Terminating   0         9m
 foo-6c444c4c69-h926n   0/1       Terminating   0         9m
 ``` 
 
-
 ``` 
 kubectl get hpa -w
 ``` 
@@ -331,14 +330,6 @@ foo       Deployment/foo   59%/50%   1         4         2         8m
 foo       Deployment/foo   59%/50%   1         4         3         8m
 foo       Deployment/foo   0%/50%    1         4         3         9m
 foo       Deployment/foo   0%/50%    1         4         3         9m
-foo       Deployment/foo   0%/50%    1         4         3         10m
-foo       Deployment/foo   0%/50%    1         4         3         10m
-foo       Deployment/foo   0%/50%    1         4         3         11m
-foo       Deployment/foo   0%/50%    1         4         3         11m
-foo       Deployment/foo   0%/50%    1         4         3         12m
-foo       Deployment/foo   0%/50%    1         4         3         12m
-foo       Deployment/foo   0%/50%    1         4         3         13m
-foo       Deployment/foo   0%/50%    1         4         1         13m
 ``` 
 
 will show that new pods are deployed, and number of replicas are incremented.
@@ -354,28 +345,27 @@ $RELEASE="v1.0.0-beta.0"
 kubectl create -f https://github.com/kubeless/kafka-trigger/releases/download/$RELEASE/kafka-zookeeper-$RELEASE.yaml
 ``` 
 
-Create kubeless function:
+Create Kubeless function:
 ``` 
-kubeless function deploy echokafka --runtime apl17.0 --from-file test-echo-kafka.dyalog  --handler test-echo-kafka.echokafka 
+kubeless function deploy echokafka --runtime apl17.0 --from-file test-echo-kafka.dyalog  --handler test-echo-kafka.echoKafka 
 ``` 
 
-Run kubeless function:
+Run Kubeless function:
 ``` 
 kubeless function call echo --data '{"Hallo":"APL"}'
 ``` 
-
 
 Create Kafka Trigger:
 ``` 
 kubeless trigger kafka create test-kafka-echo --function-selector created-by=kubeless,function=echokafka --trigger-topic echo-topic
 ``` 
 
-Create Kafka  topic:
+Create Kafka topic:
 ``` 
 kubeless topic create echo-topic
 ``` 
 
-List valable Kafka T topic:
+List valable Kafka topic:
 ``` 
 kubeless topic ls
 ``` 
