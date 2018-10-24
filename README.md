@@ -362,6 +362,7 @@ kubeless function deploy echokafka --runtime apl17.0 --from-file test-echo-kafka
 Run kubeless function:
 ``` 
 kubeless function call echo --data '{"Hallo":"APL"}'
+``` 
 
 
 Create Kafka Trigger:
@@ -387,12 +388,55 @@ kubeless topic publish --topic echo-topic --data "Hello kafka from APL!"
 In order to check if the event is dequeded, list all pods
 ``` 
 kubectl get pods --all-namespaces
+NAME                         READY     STATUS    RESTARTS   AGE
+echokafka-6d59c65959-47wgs   1/1       Running   0          1m
 ``` 
+
 and find one with echokafka function.
 
 In Log pods log 
 ``` 
-kubectl logs halloapl-<XYZ>
+kubectl logs echokafka-6d59c65959-47wgs
+ 2018/10/24 @ 12:33:41   HTTP/1.1  200  OK    Content-Type                 appl
+                                              Access-Control-Allow-Origin  *
+      ication/json; charset=utf-8   "Health check."
+
+ 2018/10/24 @ 12:33:57   POST  /  HTTP/1.1   Host             echokafka.default
+                                             User-Agent       Go-http-client/1.
+                                             Content-Length   21
+                                             Content-Type     application/x-www
+                                             Event-Id         hIfOGhQ-KwNmHCs
+                                             Event-Namespace  kafkatriggers.kub
+                                             Event-Time       2018-10-24 12:33:
+                                             Event-Type       application/x-www
+                                             Accept-Encoding  gzip
+      .svc.cluster.local:8080
+      1
+
+      -form-urlencoded
+
+      eless.io
+      56.5374067 +0000 UTC
+      -form-urlencoded
+
+ 2018/10/24 @ 12:33:57  Hello kafka from APL!
+Org. POST payload:
+Hello kafka from APL!
+POST payload:
+Hello kafka from APL!
+Exec:
+ payload:  Hello kafka from APL!
+ Handler:  HandlerWrapper
+ req:  0  SRV00000000.CON00000007  HTTPBody  Hello kafka from APL!
+Start handler wrapper for "echokafka".
+ **Hello kafka from APL!  2018 10 24 12 33 57 277**
+Stop handler wrapper for "echokafka".
+End Exec.
+ 2018/10/24 @ 12:33:57   HTTP/1.1  200  OK    Content-Type                 appl
+                                              Access-Control-Allow-Origin  *
+      ication/json; charset=utf-8   ["Hello kafka from APL!",[2018,10,24,12,33,
+
+      57,277]]
 ``` 
 should be visiable "Hello kafka from APL!" i.e. the event is dequeded from Kfaka topic.
 
