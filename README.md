@@ -30,7 +30,7 @@ $currpath = +";"+ Get-Item -Path ".\").FullName +"\kubeless-bundles\bundles\kube
 [Environment]::SetEnvironmentVariable("Path", ${currpath}, "User")
 exit # Settings are not applied current process. 
 ```
-# Set up minikube #
+## Set up minikube ##
 In this demo is used Hyper-V for vitalization of minikube. For Hyper-V is needed to set External Virtual Network Switch (this step is not described here, please google it). In demo new switch is called "Default Switch". Minikube can run also on other types of virtualization.
 
 Minikube settings and virtual machine are placed on $Home path. If your $Home is on network drive, set minikube and kubernetes variable to local disk.   
@@ -168,7 +168,7 @@ kubeless function call echo --data '{"Hallo":"APL"}'
 
 **Note:** As Istio is not installed livens probe is not connected with any circuit-breaker code. Therefore, a few seconds from start deployment to be operational.
 
-# HTTP Triger #
+# HTTP Triger#
 To ceate HTTP triger:
 ```
 kubeless trigger http create echo --function-name echo
@@ -234,7 +234,7 @@ Percentage of the requests served within a certain time (ms)
 
 The echo call is average around **4ms**.
 
-# Autoscaling #
+## Autoscaling ##
 Let create APL function which uses some CPU.
 
 ``` 
@@ -336,7 +336,7 @@ will show that new pods are deployed, and number of replicas are incremented.
 
 After the *ab* test is finished, the number of replicas and deployed pods will decrement.  
 
-# Pub-Sub example - Kafka trigger #
+## Pub-Sub example - Kafka trigger ##
 Kafka triiger can be used for Pub-Sub event subscription.
 
 At first hast to be deployed Kafka support for Kubeless in an PowerShell session:
@@ -435,8 +435,9 @@ On the end trigger can be deleted with:
 kubeless trigger kafka delete test-kafka-halloapl
 ``` 
 
-# Delete Kubeless function #
+## Delete Kubeless function ##
 To delete function run:
 ``` 
 kubeless function delete foo
 ``` 
+
