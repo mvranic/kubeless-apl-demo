@@ -158,26 +158,98 @@ cd src
 
 **Create kubelles function:**
 ``` 
-kubeless function deploy hallo --runtime apl17.0 --from-file test.dyalog  --handler test.hallo 
+kubeless function deploy echo --runtime apl17.0 --from-file test-echo.dyalog  --handler test.echo 
 ``` 
 
 **Run kubeless function:**
 ``` 
-kubeless function call hallo --data 'Hallo world'
+kubeless function call echo --data '{"Hallo":"APL"}'
 ``` 
 
-**Note:** As Istio is not installed livlenes probe is not connected with any cisrtut breake code. Therefore some half of minute is needed from is created to be operatinoal.
-
+**Note:** As Istio is not installed livens probe is not connected with any circuit-breaker code. Therefore, a few seconds from start deployment to be operational.
 
 # HTTP Triger#
+To ceate HTTP triger:
+```
+kubeless trigger http create echo --function-name echo
+```
 
+See theingress setting:
+```
+kubectl get ing
+```
+```
+NAME      HOSTS                         ADDRESS          PORTS     AGE
+hallo     hallo.172.24.206.168.nip.io   172.24.206.168   80        47s
+```
 
+Access with curl. But start bash before:
+```
+bash
+```
+
+```
+  curl --data '{"Hallo":"APL"}' \
+  --header "Host: echo.172.24.206.168.nip.io" \
+  --header "Content-Type:application/json" \
+  172.24.206.168/echo
+```
+
+Use option *-v* to see full request.
+
+# Performance test #
+To access ab (Apache benchmark) tool, the bash session is needed:
+```
+bash
+```
+
+The performance test of running 10 clients with 1000 request:
+```
+ab -H "Host: echo.172.24.206.168.nip.io" \
+   -H "Content-Type:application/json" \
+   -p ./postdata.json \
+   -c 10 -n 1000\
+   172.24.206.168/echo 
+```
+
+Outpu of test (part): 
+```
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.2      0       3
+Processing:     1   37  81.9     32    1094
+Waiting:        1   37  81.9     32    1093
+Total:          2   38  81.9     33    1095
+
+Percentage of the requests served within a certain time (ms)
+  50%     33
+  66%     36
+  75%     38
+  80%     39
+  90%     42
+  95%     46
+  98%     48
+  99%     50
+```
+
+The echo call is average around **4ms**.
 
 ## Autoscaling ##
-Update function and set up autoscale:
+Let create APL function which uses some CPU.
+
 ``` 
-kubeless function update hallo --runtime apl17.0 --from-file test.dyalog  --handler test.hallo --cpu 200m --memory 50M 
-kubeless autoscale create hallo --min 1 --max 4  --value 50
+kubeless function deploy foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test.foo 
+``` 
+
+Run kubeless function:
+``` 
+kubeless function call foo --data '{"Hallo":"APL"}'
+``` 
+
+Update function and set up auto scale:
+``` 
+kubeless function update foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test.foo --cpu 200m --memory 50M 
+kubeless autoscale create foo --min 1 --max 4  --value 50
 ``` 
 
 To see curent auto scale:
@@ -187,72 +259,97 @@ kubeless autoscale list
 
 Check if it works:
 ``` 
-kubeless function call hallo --data 'Hallo world'
+kubeless function call foo --data 'Hallo world'
 ``` 
 
-Start 4 powershell session in the directory to place where is cloned 
-https://github.com/mvranic/kubeless-apl-demo.git .
-
-Start 
-``` 
-./loop.ps1
-``` 
-which just runs function call.
-
-In the minute the values in the powershell window with 
-``` 
-kubectl get pods -w
-kubectl get hpa -w
-``` 
-will show that new pods are deployed and number of replcas are incremented.
-
-Stop the loop scriot in the powershlle windows. Aftre that the pods will be terminated and number of replicas is decremted to 1.
-
-## Perfomance ##
-To measure perfomance, the HTTP triger should be used. Therefore deployed function service is exposed:
-
-``` 
-kubectl expose deployment hallo --type=NodePort --name=my-hallo
-``` 
-
-Get service IP and port:
-
-``` 
-kubectl get services my-hallo
-``` 
-
-Switch to Linux subssytem and to run *curl* and *ab* (Appache banchmark)  tools.
+Start bash:
 ``` 
 bash
 ``` 
 
-Try to acccess to expoesde service on hallo function:
-``` 
-curl -L --data '"Hallo apl"' \
-  --header "Content-Type:application/json" \
-  localhost:8001/api/v1/namespaces/default/services/hallo:http-function-port/proxy/
-``` 
-
-Install ab tool if it is not present.
-``` 
-apt-get update
-apt-get install apache2-utils
-``` 
-
-Run perfomance test:
-``` 
-ab -T "application/json" -p ./postdata.txt -c 20 -n 1000 localhost:8001/api/v1/namespaces/default/services/hallo:http-function-port/
-``` 
-
-Cleanup of exposed service:
+Run 6 clients in parallel in *ab* tool:
+ ```
+ab -H "Host: foo.172.24.206.168.nip.io" \
+   -H "Content-Type:application/json" \
+   -p ./postdata.json \
+   -c 6 -n 10000 \
+   -t 300 \
+   172.24.206.168/foo 
 ```
-kubectl delete services my-hallo
+
+In the minute the values in the PowerShell window with 
+``` 
+kubectl get pods -w
 ```
+Output:
+``` 
+NAME                    READY     STATUS    RESTARTS   AGE
+echo-566955cb4f-8mvsq   1/1       Running   0          12h
+foo-6c444c4c69-q99jr    1/1       Running   0          1m
+hallo-9f54d4f4f-dxrkd   1/1       Running   0          15h
+foo-6c444c4c69-q99jr   1/1       Running   1         4m
+foo-6c444c4c69-h926n   0/1       Pending   0         0s
+foo-6c444c4c69-h926n   0/1       Pending   0         0s
+foo-6c444c4c69-h926n   0/1       Init:0/1   0         0s
+foo-6c444c4c69-h926n   0/1       PodInitializing   0         1s
+foo-6c444c4c69-h926n   1/1       Running   0         2s
+foo-6c444c4c69-pgpdn   0/1       Pending   0         0s
+foo-6c444c4c69-pgpdn   0/1       Pending   0         0s
+foo-6c444c4c69-pgpdn   0/1       Init:0/1   0         0s
+foo-6c444c4c69-pgpdn   0/1       PodInitializing   0         1s
+foo-6c444c4c69-pgpdn   1/1       Running   0         2s
+foo-6c444c4c69-h926n   1/1       Terminating   0         8m
+foo-6c444c4c69-pgpdn   1/1       Terminating   0         4m
+foo-6c444c4c69-pgpdn   0/1       Terminating   0         5m
+foo-6c444c4c69-pgpdn   0/1       Terminating   0         5m
+foo-6c444c4c69-h926n   0/1       Terminating   0         9m
+foo-6c444c4c69-pgpdn   0/1       Terminating   0         5m
+foo-6c444c4c69-pgpdn   0/1       Terminating   0         5m
+foo-6c444c4c69-h926n   0/1       Terminating   0         9m
+foo-6c444c4c69-h926n   0/1       Terminating   0         9m
+``` 
+
+
+``` 
+kubectl get hpa -w
+``` 
+
+``` 
+Output:
+NAME      REFERENCE        TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+foo       Deployment/foo   <unknown>/50%   1         4         1          1m
+foo       Deployment/foo   0%/50%    1         4         1         2m
+foo       Deployment/foo   37%/50%   1         4         1         3m
+foo       Deployment/foo   100%/50%   1         4         1         4m
+foo       Deployment/foo   100%/50%   1         4         2         4m
+foo       Deployment/foo   100%/50%   1         4         2         5m
+foo       Deployment/foo   99%/50%   1         4         2         6m
+foo       Deployment/foo   99%/50%   1         4         2         6m
+foo       Deployment/foo   99%/50%   1         4         2         7m
+foo       Deployment/foo   99%/50%   1         4         2         7m
+foo       Deployment/foo   59%/50%   1         4         2         8m
+foo       Deployment/foo   59%/50%   1         4         3         8m
+foo       Deployment/foo   0%/50%    1         4         3         9m
+foo       Deployment/foo   0%/50%    1         4         3         9m
+foo       Deployment/foo   0%/50%    1         4         3         10m
+foo       Deployment/foo   0%/50%    1         4         3         10m
+foo       Deployment/foo   0%/50%    1         4         3         11m
+foo       Deployment/foo   0%/50%    1         4         3         11m
+foo       Deployment/foo   0%/50%    1         4         3         12m
+foo       Deployment/foo   0%/50%    1         4         3         12m
+foo       Deployment/foo   0%/50%    1         4         3         13m
+foo       Deployment/foo   0%/50%    1         4         1         13m
+``` 
+
+will show that new pods are deployed, and number of replicas are incremented.
+
+After the *ab* test is finished, the number of replicas and deployed pods will decrement.  
 
 ## Pub-Sub example - Kafka ##
 
 ## Delete function ##
 To delete function run:
 ``` 
-kubeless function delete hallo
+kubeless function delete foo
 ``` 
+
