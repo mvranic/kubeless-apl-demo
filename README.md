@@ -158,7 +158,7 @@ cd src
 
 **Create kubelles function:**
 ``` 
-kubeless function deploy echo --runtime apl17.0 --from-file test-echo.dyalog  --handler test.echo 
+kubeless function deploy echo --runtime apl17.0 --from-file test-echo.dyalog  --handler test-echo.echo 
 ``` 
 
 **Run kubeless function:**
@@ -238,7 +238,7 @@ The echo call is average around **4ms**.
 Let create APL function which uses some CPU.
 
 ``` 
-kubeless function deploy foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test.foo 
+kubeless function deploy foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test-foo.foo 
 ``` 
 
 Run kubeless function:
@@ -248,7 +248,7 @@ kubeless function call foo --data '{"Hallo":"APL"}'
 
 Update function and set up auto scale:
 ``` 
-kubeless function update foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test.foo --cpu 200m --memory 50M 
+kubeless function update foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test-foo.foo --cpu 200m --memory 50M 
 kubeless autoscale create foo --min 1 --max 4  --value 50
 ``` 
 
@@ -345,11 +345,64 @@ will show that new pods are deployed, and number of replicas are incremented.
 
 After the *ab* test is finished, the number of replicas and deployed pods will decrement.  
 
-## Pub-Sub example - Kafka ##
+## Pub-Sub example - Kafka trigger ##
+Kafka triiger can be used for Pub-Sub event subscription.
 
-## Delete function ##
+At first hast to be deployed Kafka support for Kubeless in an PowerShell session:
+``` 
+$RELEASE="v1.0.0-beta.0"
+kubectl create -f https://github.com/kubeless/kafka-trigger/releases/download/$RELEASE/kafka-zookeeper-$RELEASE.yaml
+``` 
+
+Create kubeless function:
+``` 
+kubeless function deploy echoKafka --runtime apl17.0 --from-file test-echo-kafka.dyalog  --handler test-echo-kafka.echoKafka 
+``` 
+
+Run kubeless function:
+``` 
+kubeless function call echo --data '{"Hallo":"APL"}'
+
+
+Create Kafka Trigger:
+``` 
+kubeless trigger kafka create test-kafka-echo --function-selector created-by=kubeless,function=echoKafka --trigger-topic echo-topic
+``` 
+
+Create Kafka  topic:
+``` 
+kubeless topic create echo-topic
+``` 
+
+List valable Kafka T topic:
+``` 
+kubeless topic ls
+``` 
+
+Publish APL event of Kafka topic (queue):
+``` 
+kubeless topic publish --topic echo-topic --data "Hello kafka from APL!"
+``` 
+
+In order to check if the event is dequeded, list all pods
+``` 
+kubectl get pods --all-namespaces
+``` 
+and find one with echoKafka function.
+
+In Log pods log 
+``` 
+kubectl logs halloapl-<XYZ>
+``` 
+should be visiable "Hello kafka from APL!" i.e. the event is dequeded from Kfaka topic.
+
+On the end trigger can be deleted with:
+``` 
+kubeless trigger kafka delete test-kafka-halloapl
+``` 
+
+## Delete Kubeless function ##
 To delete function run:
 ``` 
 kubeless function delete foo
 ``` 
-
