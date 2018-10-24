@@ -356,7 +356,7 @@ kubectl create -f https://github.com/kubeless/kafka-trigger/releases/download/$R
 
 Create kubeless function:
 ``` 
-kubeless function deploy echoKafka --runtime apl17.0 --from-file test-echo-kafka.dyalog  --handler test-echo-kafka.echoKafka 
+kubeless function deploy echokafka --runtime apl17.0 --from-file test-echo-kafka.dyalog  --handler test-echo-kafka.echokafka 
 ``` 
 
 Run kubeless function:
@@ -366,7 +366,7 @@ kubeless function call echo --data '{"Hallo":"APL"}'
 
 Create Kafka Trigger:
 ``` 
-kubeless trigger kafka create test-kafka-echo --function-selector created-by=kubeless,function=echoKafka --trigger-topic echo-topic
+kubeless trigger kafka create test-kafka-echo --function-selector created-by=kubeless,function=echokafka --trigger-topic echo-topic
 ``` 
 
 Create Kafka  topic:
@@ -388,7 +388,7 @@ In order to check if the event is dequeded, list all pods
 ``` 
 kubectl get pods --all-namespaces
 ``` 
-and find one with echoKafka function.
+and find one with echokafka function.
 
 In Log pods log 
 ``` 
