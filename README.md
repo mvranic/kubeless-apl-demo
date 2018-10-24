@@ -168,7 +168,7 @@ kubeless function call echo --data '{"Hallo":"APL"}'
 
 **Note:** As Istio is not installed livens probe is not connected with any circuit-breaker code. Therefore, a few seconds from start deployment to be operational.
 
-# HTTP Triger#
+# HTTP Triger #
 To ceate HTTP triger:
 ```
 kubeless trigger http create echo --function-name echo
@@ -234,7 +234,7 @@ Percentage of the requests served within a certain time (ms)
 
 The echo call is average around **4ms**.
 
-## Autoscaling ##
+# Autoscaling #
 Let create APL function which uses some CPU.
 
 ``` 
@@ -352,18 +352,14 @@ kubeless function deploy echokafka --runtime apl17.0 --from-file test-echo-kafka
 
 Run Kubeless function:
 ``` 
-kubeless function call echo --data '{"Hallo":"APL"}'
+kubeless function call echokafka --data '{"Hallo":"APL"}'
 ``` 
 
 Create Kafka Trigger:
 ``` 
 kubeless trigger kafka create test-kafka-echo --function-selector created-by=kubeless,function=echokafka --trigger-topic echo-topic
 ``` 
-
-Create Kafka topic:
-``` 
-kubeless topic create echo-topic
-``` 
+With this will be ctreated *echo-topic* too.
 
 List valable Kafka topic:
 ``` 
