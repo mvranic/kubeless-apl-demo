@@ -432,17 +432,35 @@ In the end trigger can be deleted with:
 kubeless trigger kafka delete test-kafka-halloapl
 ``` 
 
-## Kubeless UI (still under test) ##
+## Kubeless UI ##
 Kubeless UI enables to edit deployed functions. To change APL function should be used GitHub fork https://github.com/mvranic/kubeless-ui.git of https://github.com/kubeless/kubeless-ui.git . 
 
-The Kubeless UI is deployed from *docker PowerShell session*. Change directory to place where https://github.com/mvranic/kubeless-ui.git is cloned. To deploy run:
+The Kubeless UI is deployed from *docker PowerShell session*. Change directory to place where https://github.com/mvranic/kubeless-ui.git is cloned. To build run:
 ``` 
 .\build-local-images.ps1
 ``` 
 
-To start Kubeless UI run:
+Deploy Kubeless UI.
+```
+kubectl apply -f .\k8s-local.yaml
+```
+
+To start Kubeless UI run (new PowerShell session):
 ``` 
 minikube service ui -n kubeless
+``` 
+
+Alternatively,
+
+``` 
+kubectl get svc ui -n kubeless
+NAME      CLUSTER-IP   EXTERNAL-IP   PORT(S)          AGE
+ui        10.0.0.151   <pending>     3000:31172/TCP   12m
+``` 
+and access the UI at
+
+``` 
+$(minikube ip):31172
 ``` 
 
 After that deployed function can be changed in Kubeless UI.
@@ -452,5 +470,3 @@ To delete function run:
 ``` 
 kubeless function delete foo
 ``` 
-
-
