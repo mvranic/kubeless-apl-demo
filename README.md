@@ -1,19 +1,22 @@
 # Demo: APL on Kubeless Serverless platform #
-Kubeless is serverless opensource platform, see www.kubeless.io .
+Kubeless is a serverless open source platform, see www.kubeless.io .
 
-APL is programming language, where central datatype is the multidimensional array. In demo is used Dyalog 17.0 APL interpreter (Linux version), see www.dyalog.com .
+APL is **A** **P**rogramming **L**anguage, where central datatype is the multidimensional array. In this demo we use Dyalog 17.0 APL interpreter (Linux version), see www.dyalog.com .
+
+APL Kubeless runtime (see fork of Kubless https://github.com/mvranic/kubeless) is based on JSON Server https://github.com/Dyalog/JSONServer. JSON Server used in APL Kubeless runtime is extended in a fork at https://github.com/mvranic/JSONServer .
 
 **Note:**
-Dyalog APL 17.0 distribution is needed for run this demo. Look on www.dyalog.com for options how to download. 
+Dyalog APL 17.0 distribution is needed to run this demo. Look on www.dyalog.com for options on how to download installation. 
 
-Demo is executed on minikube Kubernetes cluster (see https://github.com/kubernetes/minikube ) which is running local PC with Windows 10. Commands in demo are executed in PowerShell session.  
+Demo is executed on minikube Kubernetes cluster (see https://github.com/kubernetes/minikube ) which is running local PC with Windows 10. Commands in demo are executed in a PowerShell session.  
 
-**curl** and **ab** (Apache Benchmark) tools are used from Linux Subsystem (which might be installed on Windows 10).   
+**curl** and **ab** (Apache Benchmark) tools are used from Linux Subsystem (which can be installed on Windows 10).   
 
 ## Clone Kubeless code and binaries ## 
-Use custom folder where the code will be cloned from GitHub like (e.g c:\kubeless-demo). Further this folder is called **kubeless working folder**.
+Use custom folder where the code will be cloned from GitHub like (e.g. c:\kubeless-demo). Further this folder will be called **Kubeless working folder**.
 
-Kubeless serverless framework support various programming languages, but APL is not by supported. Therefore, Kubeless serverless framework has to be extended, to implement APL runtime to run APL code.  
+Kubeless serverless framework supports various programming languages, but APL is not by supported. Therefore, Kubeless serverless framework had to be extended, to implement APL runtime to run APL code.
+
 To clone forked Kubeless framework, Kubeless bundles, Kubeless deployment and this demo use:
 ```
 git clone https://github.com/mvranic/kubeless.git
@@ -31,9 +34,9 @@ $currpath = +";"+ Get-Item -Path ".\").FullName +"\kubeless-bundles\bundles\kube
 exit # Settings are not applied current process. 
 ```
 ## Set up minikube ##
-In this demo is used Hyper-V for vitalization of minikube. For Hyper-V is needed to set External Virtual Network Switch (this step is not described here, please google it). In demo new switch is called "Default Switch". Minikube can run also on other types of virtualization.
+In this demo we use Hyper-V for vitalization of minikube. Hyper-V requires to set External Virtual Network Switch (this step is not described here, please google it). In demo new switch is called "Default Switch". Minikube can run also on other types of virtualization, like Oracles Virtual Box and others.
 
-Minikube settings and virtual machine are placed on $Home path. If your $Home is on network drive, set minikube and kubernetes variable to local disk.   
+Minikube settings and virtual machine are placed on $Home path. If your $Home is on network drive, set minikube and kubernetes variable to local disk.
 
 ```
 [Environment]::SetEnvironmentVariable("MINIKUBE_HOME", "C:/Users/${env:UserName}/.minikube", "User")
@@ -43,8 +46,8 @@ exit # Setings are not applied current process.
 
 **Note:**
 
-The fastest why to stop, and clean up minikube cluster is:
-1. Turn-off and delete minikube VM in Hyper-V manger.
+The fastest way to stop, and clean up minikube cluster is:
+1. Turn-off and delete Minikube VM in Hyper-V manger.
 2. Remove folders: 
     * C:/Users/${env:UserName}/.minikube
     * C:/Users/mvc/.kube
@@ -66,7 +69,7 @@ minikube addons enable ingress
 **Metrics server** addon is used for autoscaling.
 **ingress** addon is used for creating routes for functions.
 
-Optional can be enabled **heapster** which is old metrics for autoscaling and used for charts in dashboard.
+Optionally enable **heapster** addon, which is old metrics for autoscaling and used for charts in dashboard.
 
 ```
 minikube addons enable heapster
@@ -85,7 +88,7 @@ minikube dashboard
 ```
 
 ## Setup local Docker registry in minikube ##
-To access docker in minikube VM, open new PowerShell session (further called *docker PowerShell session*) and run: 
+To access docker in minikube VM, open new PowerShell session (further on called *docker PowerShell session*) and run: 
 
 ```
 minikube docker-env | Invoke-Expression
@@ -107,7 +110,7 @@ Now docker images can be pushed to the local docker registry.
 
 Use *docker PowerShell session*.
 
-Change directory to place where is cloned https://github.com/mvranic/kubeless.git .
+Change directory to place where https://github.com/mvranic/kubeless.git is cloned.
 
 Change directory to folder where is Kubeless APL runtime defined:
 ```
@@ -122,7 +125,7 @@ Build and push Kubeless APL runtime docker image:
 ``` 
 
 ## Deploy Kubeless framework ##
-Change directory to place where is cloned https://github.com/mvranic/kubeless-apl-deployment.git .
+Change directory to place where https://github.com/mvranic/kubeless-apl-deployment.git is cloned.
 
 Deploy Kubeless framework:
 ```
@@ -148,8 +151,7 @@ kubectl get pods -w
 ``` 
 kubectl get hpa -w
 ``` 
-Change directory to place where is cloned 
-https://github.com/mvranic/kubeless-apl-demo.git .
+Change directory to place where https://github.com/mvranic/kubeless-apl-demo.git is cloned.
 
 Change directory to *src* folder: 
 ``` 
@@ -161,12 +163,12 @@ cd src
 kubeless function deploy echo --runtime apl17.0 --from-file test-echo.dyalog  --handler test-echo.echo 
 ``` 
 
-**Run kubeless function:**
+**Run Kubeless function:**
 ``` 
 kubeless function call echo --data '{"Hallo":"APL"}'
 ``` 
 
-**Note:** As Istio is not installed livens probe is not connected with any circuit-breaker code. Therefore, a few seconds from start deployment to be operational.
+**Note:** As Istio is not installed liveness probe  is not connected with any circuit-breaker code. Therefore, wait a few seconds from start deployment to be operational. In Kubeless liveness probe is API GET *healthz*, which is deployed to JSON Server in side of APL runtime.
 
 # HTTP Triger #
 To ceate HTTP triger:
@@ -174,7 +176,7 @@ To ceate HTTP triger:
 kubeless trigger http create echo --function-name echo
 ```
 
-See theingress setting:
+See the Ingress setting:
 ```
 kubectl get ing
 ```
@@ -212,7 +214,7 @@ ab -H "Host: echo.172.24.206.168.nip.io" \
    172.24.206.168/echo 
 ```
 
-Outpu of test (part): 
+Output of test (a part): 
 ```
 Connection Times (ms)
               min  mean[+/-sd] median   max
@@ -235,7 +237,7 @@ Percentage of the requests served within a certain time (ms)
 The echo call is average around **4ms**.
 
 # Autoscaling #
-Let create APL function which uses some CPU.
+Let’s create APL function which uses some CPU.
 
 ``` 
 kubeless function deploy foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test-foo.foo 
@@ -277,7 +279,7 @@ ab -H "Host: foo.172.24.206.168.nip.io" \
    172.24.206.168/foo 
 ```
 
-In the minute the values in the PowerShell window with 
+Monitoring the **hpa** and **pods** the values in the PowerShell window will show that new pods are deployed, and number of replicas are incremented.
 ``` 
 kubectl get pods -w
 ```
@@ -332,14 +334,12 @@ foo       Deployment/foo   0%/50%    1         4         3         9m
 foo       Deployment/foo   0%/50%    1         4         3         9m
 ``` 
 
-will show that new pods are deployed, and number of replicas are incremented.
-
 After the *ab* test is finished, the number of replicas and deployed pods will decrement.  
 
 ## Pub-Sub example - Kafka trigger ##
-Kafka triiger can be used for Pub-Sub event subscription.
+Kafka trigger can be used for Pub-Sub event subscription.
 
-At first hast to be deployed Kafka support for Kubeless in an PowerShell session:
+At first Kafka support for Kubeless has to be deployed:
 ``` 
 $RELEASE="v1.0.0-beta.0"
 kubectl create -f https://github.com/kubeless/kafka-trigger/releases/download/$RELEASE/kafka-zookeeper-$RELEASE.yaml
@@ -359,9 +359,9 @@ Create Kafka Trigger:
 ``` 
 kubeless trigger kafka create test-kafka-echo --function-selector created-by=kubeless,function=echokafka --trigger-topic echo-topic
 ``` 
-With this will be ctreated *echo-topic* too.
+With this will be created *echo-topic* too.
 
-List valable Kafka topic:
+List available Kafka topics:
 ``` 
 kubeless topic ls
 ``` 
@@ -371,7 +371,7 @@ Publish APL event of Kafka topic (queue):
 kubeless topic publish --topic echo-topic --data "Hello kafka from APL!"
 ``` 
 
-In order to check if the event is dequeded, list all pods
+In order to check if the event is dequeued, list all pods
 ``` 
 kubectl get pods --all-namespaces
 NAME                         READY     STATUS    RESTARTS   AGE
@@ -424,9 +424,9 @@ End Exec.
 
       57,277]]
 ``` 
-should be visiable "Hello kafka from APL!" i.e. the event is dequeded from Kfaka topic.
+should be visible "Hello kafka from APL!" i.e. the event is dequeued from Kafka topic.
 
-On the end trigger can be deleted with:
+In the end trigger can be deleted with:
 ``` 
 kubeless trigger kafka delete test-kafka-halloapl
 ``` 
@@ -436,4 +436,5 @@ To delete function run:
 ``` 
 kubeless function delete foo
 ``` 
+
 
