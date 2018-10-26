@@ -22,6 +22,7 @@ To clone forked Kubeless framework, Kubeless bundles, Kubeless deployment and th
 git clone https://github.com/mvranic/kubeless.git
 git clone https://github.com/mvranic/kubeless-bundles.git
 git clone https://github.com/mvranic/kubeless-apl-deployment.git
+git clone https://github.com/mvranic/kubeless-ui.git
 git clone https://github.com/mvranic/kubeless-apl-demo.git
 ```
 https://github.com/mvranic/kubeless-bundles is result of    https://github.com/mvranic/kubeless.git build.
@@ -430,6 +431,21 @@ In the end trigger can be deleted with:
 ``` 
 kubeless trigger kafka delete test-kafka-halloapl
 ``` 
+
+## Kubeless UI (still under test) ##
+Kubeless UI enables to edit deployed functions. To change APL function should be used GitHub fork https://github.com/mvranic/kubeless-ui.git of https://github.com/kubeless/kubeless-ui.git . 
+
+The Kubeless UI is deployed from *docker PowerShell session*. Change directory to place where https://github.com/mvranic/kubeless-ui.git is cloned. To deploy run:
+``` 
+.\build-local-images.ps1
+``` 
+
+To start Kubeless UI run:
+``` 
+minikube service ui -n kubeless
+``` 
+
+After that deployed function can be changed in Kubeless UI.
 
 ## Delete Kubeless function ##
 To delete function run:
