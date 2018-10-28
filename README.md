@@ -136,7 +136,9 @@ Deploy Kubeless framework:
 ## Verify deployment ##
 To se what is deployed use:
 ```
-kubectl get pod --all-namespaces
+ kubectl get pods -n kubeless
+ kubectl get deployment -n kubeless
+ kubectl get customresourcedefinition
 ```
 
 **Kubeless with APL is deployed now.**
