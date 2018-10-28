@@ -391,7 +391,7 @@ kubeless topic ls
 
 Publish APL event of Kafka topic (queue):
 ``` 
-kubeless topic publish --topic echo-topic --data "Hello kafka from APL!"
+kubeless topic publish --topic echo-topic --data  '{"Hallo Kafka":"APL"}'
 ``` 
 
 In order to check if the event is dequeued, list all pods
