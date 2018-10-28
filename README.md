@@ -207,7 +207,7 @@ kubectl get ing
 ```
 ```
 NAME      HOSTS                         ADDRESS          PORTS     AGE
-hallo     hallo.172.24.206.168.nip.io   172.24.206.168   80        47s
+echo      echo.172.24.206.168.nip.io    172.24.206.168   80        47s
 ```
 
 Access with curl. But start bash before:
