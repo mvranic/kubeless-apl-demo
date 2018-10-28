@@ -137,11 +137,23 @@ Deploy Kubeless framework:
 To se what is deployed use:
 ```
  kubectl get pods -n kubeless
+NAME                                           READY     STATUS    RESTARTS   AGE
+kubeless-controller-manager-5d7894857d-nzrqm   3/3       Running   0          1m
+```
+```
  kubectl get deployment -n kubeless
+NAME                          DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+kubeless-controller-manager   1         1         1            1           1m
+```
+```
  kubectl get customresourcedefinition
+NAME                          AGE
+cronjobtriggers.kubeless.io   1m
+functions.kubeless.io         1m
+httptriggers.kubeless.io      1m
 ```
 
-**Kubeless with APL is deployed now.**
+**Kubeless with APL runtime is deployed now.**
 
 # Run APL hello world #
 Change directory to place where https://github.com/mvranic/kubeless-apl-demo.git is cloned.
