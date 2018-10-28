@@ -133,8 +133,8 @@ Deploy Kubeless framework:
 .\deployment\deploy-apply.ps1
 ``` 
 
-## versify deployment ##
-To se waht is deployed use:
+## Verify deployment ##
+To se what is deployed use:
 ```
 kubectl get pod --all-namespaces
 ```
@@ -142,16 +142,6 @@ kubectl get pod --all-namespaces
 **Kubeless with APL is deployed now.**
 
 # Run APL hello world #
-Let open some PowerShell to see the status of deployment. Open new PowerShell command for each of command:
-``` 
-kubectl get deployment -w
-``` 
-``` 
-kubectl get pods -w
-``` 
-``` 
-kubectl get hpa -w
-``` 
 Change directory to place where https://github.com/mvranic/kubeless-apl-demo.git is cloned.
 
 Change directory to *src* folder: 
@@ -170,6 +160,38 @@ kubeless function call echo --data '{"Hallo":"APL"}'
 ``` 
 
 **Note:** As Istio is not installed liveness probe  is not connected with any circuit-breaker code. Therefore, wait a few seconds from start deployment to be operational. In Kubeless liveness probe is API GET *healthz*, which is deployed to JSON Server in side of APL runtime.
+
+Let open some PowerShell to see the status of deployment. Open new PowerShell command for each of command:
+``` 
+kubectl get deployment -w
+``` 
+Output:
+```
+NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+echo      1         1         1            1           1m
+``` 
+
+``` 
+kubectl get pods -w
+``` 
+Output:
+``` 
+NAME                    READY     STATUS    RESTARTS   AGE
+echo-65d99fffd5-zxrtx   1/1       Running   0          1m
+``` 
+
+``` 
+kubectl get pods -w
+``` 
+Output:
+``` 
+NAME                    READY     STATUS    RESTARTS   AGE
+echo-65d99fffd5-zxrtx   1/1       Running   0          1m
+``` 
+
+``` 
+kubectl get hpa -w
+``` 
 
 # HTTP Triger #
 To ceate HTTP triger:
