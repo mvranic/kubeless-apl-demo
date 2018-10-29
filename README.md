@@ -236,6 +236,17 @@ bash
 
 Use option *-v* to see full request.
 
+# Exposing deployment without Ingress #
+*Note:*
+
+This requires that ingress addon is not installed and http trigger is not needed too.
+
+Kubeless service can be directly exposed with:
+```
+kubectl expose deployment echo --type=LoadBalancer --name=my-echo
+```
+This could be useful to avoid CORS trouble.
+
 # Performance test #
 To access ab (Apache benchmark) tool, the bash session is needed:
 ```
