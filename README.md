@@ -280,6 +280,11 @@ Let’s create APL function which uses some CPU.
 kubeless function deploy foo --runtime apl17.0 --from-file test-foo.dyalog  --handler test-foo.foo 
 ``` 
 
+Make HTTP trigger:
+``` 
+kubeless trigger http create foo --function-name foo
+``` 
+
 Run kubeless function:
 ``` 
 kubeless function call foo --data '{"Hallo":"APL"}'
