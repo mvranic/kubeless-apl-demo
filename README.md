@@ -207,8 +207,8 @@ echo-65d99fffd5-zxrtx   1/1       Running   0          1m
 kubectl get hpa -w
 ``` 
 
-# HTTP Triger #
-To ceate HTTP triger:
+# HTTP Trigger #
+To ceate HTTP Trigger:
 ```
 kubeless trigger http create echo --function-name echo
 ```
@@ -219,7 +219,7 @@ kubectl get ing
 ```
 ```
 NAME      HOSTS                         ADDRESS          PORTS     AGE
-echo      echo.172.24.206.168.nip.io    172.24.206.168   80        47s
+echo      echo.172.29.142.60.nip.io    172.29.142.60   80        47s
 ```
 
 Access with curl. But start bash before:
@@ -229,9 +229,9 @@ bash
 
 ```
   curl --data '{"Hallo":"APL"}' \
-  --header "Host: echo.172.24.206.168.nip.io" \
+  --header "Host: echo.172.29.142.60.nip.io" \
   --header "Content-Type:application/json" \
-  172.24.206.168/echo
+  172.29.142.60/echo
 ```
 
 Use option *-v* to see full request.
@@ -244,11 +244,11 @@ bash
 
 The performance test of running 10 clients with 1000 request:
 ```
-ab -H "Host: echo.172.24.206.168.nip.io" \
+ab -H "Host: echo.172.29.142.60.nip.io" \
    -H "Content-Type:application/json" \
    -p ./postdata.json \
    -c 10 -n 1000\
-   172.24.206.168/echo 
+   172.29.142.60/echo 
 ```
 
 Output of test (a part): 
@@ -313,12 +313,12 @@ bash
 
 Run 6 clients in parallel in *ab* tool:
  ```
-ab -H "Host: foo.172.24.206.168.nip.io" \
+ab -H "Host: foo.172.29.142.60.nip.io" \
    -H "Content-Type:application/json" \
    -p ./postdata.json \
    -c 6 -n 10000 \
    -t 300 \
-   172.24.206.168/foo 
+   172.29.142.60/foo 
 ```
 
 Monitoring the **hpa** and **pods** the values in the PowerShell window will show that new pods are deployed, and number of replicas are incremented.
